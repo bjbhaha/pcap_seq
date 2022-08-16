@@ -1,0 +1,46 @@
+apply plugin: 'java'
+apply plugin: 'idea'
+
+sourceCompatibility = 1.6
+version = '1.2'
+jar {
+    manifest {
+        attributes 'Implementation-Title': 'pcap2seq', 'Implementation-Version': version, 'Main-class': 'io.ushabti.Driver'
+    }
+    from {
+        //添加依懒到打包文件
+        //configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+        configurations.runtime.collect { zipTree(it) }
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile group: 'commons-collections', name: 'commons-collections', version: '3.2'
+    testCompile group: 'junit', name: 'junit', version: '4.+'
+    compile 'org.apache.hadoop:hadoop-core:1.2.1'
+}
+
+test {
+    systemProperties 'property': 'value'
+}
+
+uploadArchives {
+    repositories {
+       flatDir {
+           dirs 'repos'
+       }
+    }
+}
+task clearJar(type: Delete) {
+    delete 'build/libs'
+}
+
+task copyJar(type: Copy) {
+    from configurations.runtime
+    into('build/libs')
+}
+task release(type: Copy, dependsOn: [build, clearJar, copyJar])

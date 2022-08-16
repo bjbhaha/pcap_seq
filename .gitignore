@@ -1,0 +1,3 @@
+# Project exclude paths
+/pcap2seq-master/.gradle/
+/pcap2seq-master/build/
