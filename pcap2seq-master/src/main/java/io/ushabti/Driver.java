@@ -30,7 +30,7 @@ public class Driver {
 
     	testWriter.close();
     	testReader.close();
-
+//
     	System.out.println("Converted " + testReader.getTotalPackets() + " packets.");
     	System.out.println("Read a total of " + testReader.getTotalBytes() + " bytes.");
     }
