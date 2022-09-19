@@ -1,5 +1,6 @@
 package io.ushabti;
 
+import org.apache.hadoop.io.BytesWritable;
 import org.apache.hadoop.io.SequenceFile;
 import org.apache.hadoop.io.Writable;
 import org.apache.hadoop.util.ReflectionUtils;
@@ -24,8 +25,14 @@ public class Driver {
     	System.out.println("Converting pcap file to Hadoop sequence file ...");
 
     	while (testReader.getHeaderTime() != -1){
-			//System.out.println(testReader.getTimeStamp());
-    		testWriter.write(testReader.getTimeStamp(), testReader.getPacket());
+			System.out.println(testReader.getTimeStamp());
+			byte[] a=new byte[testReader.getCurrentPacketLength()+16];
+			//byte[] b=testReader.getPacket();
+			//byte[] a=testReader.getPcapHeader();
+			System.arraycopy(testReader.getPcapHeader(),0,a,0,16);
+			System.arraycopy(testReader.getPacket(),0,a,16,testReader.getCurrentPacketLength());
+    		testWriter.write(testReader.getTimeStamp(), a);
+			System.out.println(new BytesWritable(a));
     	}
 
     	testWriter.close();

@@ -16,6 +16,7 @@ public class SequenceFileWriter {
 	private FileSystem fileSystem;
 	private Path path;
 	
+	//private BytesWritable key = new BytesWritable();
 	private IntWritable key = new IntWritable();
 	private BytesWritable value = new BytesWritable();
 	
@@ -36,9 +37,17 @@ public class SequenceFileWriter {
 		else
 			writer = SequenceFile.createWriter(fileSystem, configuration, path,key.getClass(), value.getClass());	
 	}
-	
+	public static byte[] toLH(int n) {
+		byte[] b = new byte[4];
+		b[0] = (byte) (n & 0xff);
+		b[1] = (byte) (n >> 8 & 0xff);
+		b[2] = (byte) (n >> 16 & 0xff);
+		b[3] = (byte) (n >> 24 & 0xff);
+		return b;
+	}
 	public void write(int pcapkey, byte[] pcapValue) throws IOException{
-		
+		byte[] pcapkeyByte=toLH(pcapkey);
+		//key.set(pcapkeyByte,0,pcapkeyByte.length);
 		key.set(pcapkey);
 		value.set(pcapValue, 0, pcapValue.length);
 		

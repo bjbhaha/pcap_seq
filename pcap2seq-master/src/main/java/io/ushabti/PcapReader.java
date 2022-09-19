@@ -23,7 +23,8 @@ public class PcapReader {
 	private int timeStamp;
 	private long totalPackets;
 	private long totalBytes;
-	
+
+	private byte[] pcapHeader = new byte[16];
 	public PcapReader(String pcapfile) throws MalformedFileException, IOException{
 		this.pcapByteInputStream = new FileInputStream(new File(pcapfile));
 		verifyPcapFile();
@@ -64,11 +65,11 @@ public class PcapReader {
 	}
 
 	public int getHeaderTime() throws IOException {
-		byte[] pcapHeader = new byte[16];
+
 		byte[] readBuffer = new byte[4];
 		ByteBuffer readByteBuffer = ByteBuffer.wrap(readBuffer);
 		readByteBuffer.order(pcapFileByteOrder);
-		if(this.pcapByteInputStream.read(readBuffer, 0, pcapHeaderSize) != -1){
+		if(this.pcapByteInputStream.read(pcapHeader, 0, 16) != -1){
 			System.arraycopy(pcapHeader,0,readBuffer,0,4);
 			readByteBuffer.rewind();
 			this.timeStamp = readByteBuffer.getInt();
@@ -130,6 +131,12 @@ public class PcapReader {
 		return timeStamp;
 	}
 
+	public int getCurrentPacketLength(){
+		return currentPacketLength;
+	}
+	public byte[] getPcapHeader(){
+		return pcapHeader;
+	}
 	public long getTotalPackets() {
 		return totalPackets;
 	}
