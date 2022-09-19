@@ -23,8 +23,8 @@ public class Driver {
 
     	System.out.println("Converting pcap file to Hadoop sequence file ...");
 
-    	while (testReader.getPacketTimeStamp() != -1){
-			System.out.println(testReader.getTimeStamp());
+    	while (testReader.getHeaderTime() != -1){
+			//System.out.println(testReader.getTimeStamp());
     		testWriter.write(testReader.getTimeStamp(), testReader.getPacket());
     	}
 

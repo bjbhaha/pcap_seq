@@ -62,7 +62,24 @@ public class PcapReader {
 	public void close() throws IOException{
 		this.pcapByteInputStream.close();
 	}
-	
+
+	public int getHeaderTime() throws IOException {
+		byte[] pcapHeader = new byte[16];
+		byte[] readBuffer = new byte[4];
+		ByteBuffer readByteBuffer = ByteBuffer.wrap(readBuffer);
+		readByteBuffer.order(pcapFileByteOrder);
+		if(this.pcapByteInputStream.read(readBuffer, 0, pcapHeaderSize) != -1){
+			System.arraycopy(pcapHeader,0,readBuffer,0,4);
+			readByteBuffer.rewind();
+			this.timeStamp = readByteBuffer.getInt();
+			System.arraycopy(pcapHeader,12,readBuffer,0,4);
+			readByteBuffer.rewind();
+			currentPacketLength = readByteBuffer.getInt();
+		}else
+			return -1;
+
+		return 0;
+	}
 	public int getPacketTimeStamp() throws IOException {
 		
 		byte[] readBuffer = new byte[4];
