@@ -39,16 +39,16 @@ public class PcapReader {
 		int magicNumber = magicNumberByteBuffer.getInt();
 		
 		// ByteBuffer uses BIG_ENDIAN by default
-		if(magicNumber == pcapIdenticalHeader){
-			System.out.println("PCAP FILE FORMAT : IDENTICAL");
-			pcapFileByteOrder = ByteOrder.BIG_ENDIAN;
-		}
-		else if(magicNumber == pcapSwappedHeader) {
-			System.out.println("PCAP FILE FORMAT : SWAPPED");
-			pcapFileByteOrder = ByteOrder.LITTLE_ENDIAN;
-		}
-		else
-			throw new MalformedFileException("MALFORMED PCAP FILE : BAD MAGIC NUMBER");
+//		if(magicNumber == pcapIdenticalHeader){
+//			System.out.println("PCAP FILE FORMAT : IDENTICAL");
+//			pcapFileByteOrder = ByteOrder.BIG_ENDIAN;
+//		}
+//		else if(magicNumber == pcapSwappedHeader) {
+//			System.out.println("PCAP FILE FORMAT : SWAPPED");
+//			pcapFileByteOrder = ByteOrder.LITTLE_ENDIAN;
+//		}
+//		else
+//			throw new MalformedFileException("MALFORMED PCAP FILE : BAD MAGIC NUMBER");
 		
 		// skip to the first packet header
 		this.pcapByteInputStream.skip(pcapHeaderSize - pcapMagicNumberHeaderSize);

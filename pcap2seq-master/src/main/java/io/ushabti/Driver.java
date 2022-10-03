@@ -13,31 +13,35 @@ import org.apache.hadoop.fs.Path;
 public class Driver {
 
     public static void main(String[] args) throws Exception {
-
+		long startTime = System.currentTimeMillis();
     	if(args.length != 3){
     		System.out.println("Usage : input_pcap_file output_sequence_file [none, gzip, bzip]");
     		return;
     	}
-		//args=new String[]{"/home/bjbhaha/Desktop/music.pcap","/home/bjbhaha/Desktop/music.seq"};
+		//args=new String[]{"/home/bjbhaha/Desktop/music31.pcap","/home/bjbhaha/Desktop/music.seq"};
     	PcapReader testReader = new PcapReader(args[0]);
     	SequenceFileWriter testWriter = new SequenceFileWriter(args[1], args[2]);
 
     	System.out.println("Converting pcap file to Hadoop sequence file ...");
 
     	while (testReader.getHeaderTime() != -1){
-			System.out.println(testReader.getTimeStamp());
+			//System.out.println(testReader.getTimeStamp());
 			byte[] a=new byte[testReader.getCurrentPacketLength()+16];
 			//byte[] b=testReader.getPacket();
 			//byte[] a=testReader.getPcapHeader();
 			System.arraycopy(testReader.getPcapHeader(),0,a,0,16);
 			System.arraycopy(testReader.getPacket(),0,a,16,testReader.getCurrentPacketLength());
     		testWriter.write(testReader.getTimeStamp(), a);
-			System.out.println(new BytesWritable(a));
+			//System.out.println(new BytesWritable(a));
     	}
+//		while (testReader.getPacketTimeStamp() != -1){
+//			testWriter.write(testReader.getTimeStamp(), testReader.getPacket());
+//		}
 
     	testWriter.close();
     	testReader.close();
-//
+		long endTime = System.currentTimeMillis();
+		System.out.println("运行时间：" + (endTime - startTime) + "ms");
     	System.out.println("Converted " + testReader.getTotalPackets() + " packets.");
     	System.out.println("Read a total of " + testReader.getTotalBytes() + " bytes.");
     }

@@ -50,7 +50,8 @@ public class SequenceFileWriter {
 		//key.set(pcapkeyByte,0,pcapkeyByte.length);
 		key.set(pcapkey);
 		value.set(pcapValue, 0, pcapValue.length);
-		
+		//value=pcapValue;
+		//System.out.println("!");
 		writer.append(key, value);
 	}
 	
