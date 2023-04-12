@@ -1,5 +1,6 @@
 package io.ushabti;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -18,6 +19,7 @@ public class PcapReader {
 	public static final short pcapOriginalPacketLengthSize = 4;
 	
 	private FileInputStream pcapByteInputStream;
+	private BufferedInputStream pcapByteBufferedInputStream;
 	private ByteOrder pcapFileByteOrder;
 	private int currentPacketLength;
 	private int timeStamp;
@@ -27,6 +29,7 @@ public class PcapReader {
 	private byte[] pcapHeader = new byte[16];
 	public PcapReader(String pcapfile) throws MalformedFileException, IOException{
 		this.pcapByteInputStream = new FileInputStream(new File(pcapfile));
+		this.pcapByteBufferedInputStream  = new BufferedInputStream(this.pcapByteInputStream);
 		verifyPcapFile();
 	}
 	
@@ -35,7 +38,8 @@ public class PcapReader {
 		byte[] magicNumberBuffer = new byte[4];
 		ByteBuffer magicNumberByteBuffer = ByteBuffer.wrap(magicNumberBuffer);
 		// read the magic number
-		this.pcapByteInputStream.read(magicNumberBuffer, 0, pcapMagicNumberHeaderSize);
+		//this.pcapByteInputStream.read(magicNumberBuffer, 0, pcapMagicNumberHeaderSize);
+		this.pcapByteBufferedInputStream.read(magicNumberBuffer, 0, pcapMagicNumberHeaderSize);
 		int magicNumber = magicNumberByteBuffer.getInt();
 		
 		// ByteBuffer uses BIG_ENDIAN by default
@@ -51,7 +55,7 @@ public class PcapReader {
 //			throw new MalformedFileException("MALFORMED PCAP FILE : BAD MAGIC NUMBER");
 		
 		// skip to the first packet header
-		this.pcapByteInputStream.skip(pcapHeaderSize - pcapMagicNumberHeaderSize);
+		this.pcapByteBufferedInputStream.skip(pcapHeaderSize - pcapMagicNumberHeaderSize);
 		
 		//Set Total number of packets to 0
 		this.setTotalPackets(0);
@@ -61,7 +65,7 @@ public class PcapReader {
 	}
 	
 	public void close() throws IOException{
-		this.pcapByteInputStream.close();
+		this.pcapByteBufferedInputStream.close();
 	}
 
 	public int getHeaderTime() throws IOException {
@@ -69,7 +73,7 @@ public class PcapReader {
 		byte[] readBuffer = new byte[4];
 		ByteBuffer readByteBuffer = ByteBuffer.wrap(readBuffer);
 		readByteBuffer.order(pcapFileByteOrder);
-		if(this.pcapByteInputStream.read(pcapHeader, 0, 16) != -1){
+		if(this.pcapByteBufferedInputStream.read(pcapHeader, 0, 16) != -1){
 			System.arraycopy(pcapHeader,0,readBuffer,0,4);
 			readByteBuffer.rewind();
 			this.timeStamp = readByteBuffer.getInt();
@@ -88,18 +92,18 @@ public class PcapReader {
 		readByteBuffer.order(pcapFileByteOrder);
 		
 		// Read TimeStamp from packet header
-		if(this.pcapByteInputStream.read(readBuffer, 0, pcapPacketTimeStampSize) != -1){
+		if(this.pcapByteBufferedInputStream.read(readBuffer, 0, pcapPacketTimeStampSize) != -1){
 			readByteBuffer.rewind();
 			this.timeStamp = readByteBuffer.getInt();
 			// Skip to Packet Length
-			if(this.pcapByteInputStream.skip(pcapPacketNanoTimeStampSize) != -1) {
+			if(this.pcapByteBufferedInputStream.skip(pcapPacketNanoTimeStampSize) != -1) {
 				// Read Packet Length
-				if(this.pcapByteInputStream.read(readBuffer, 0, pcapPacketLengthSize) != -1){
+				if(this.pcapByteBufferedInputStream.read(readBuffer, 0, pcapPacketLengthSize) != -1){
 					readByteBuffer.rewind();
 					// set current packet length
 					currentPacketLength = readByteBuffer.getInt();
 					// Skip to the next packet
-					if(this.pcapByteInputStream.skip(pcapOriginalPacketLengthSize) == -1)
+					if(this.pcapByteBufferedInputStream.skip(pcapOriginalPacketLengthSize) == -1)
 						return -1;
 				}
 				else
@@ -120,7 +124,7 @@ public class PcapReader {
 		
 		// We'll Assume that after each header there's a packet; TODO : add checks
 		// returned byte[] is in the original byte order
-		this.pcapByteInputStream.read(readBuffer, 0, currentPacketLength);
+		this.pcapByteBufferedInputStream.read(readBuffer, 0, currentPacketLength);
 		this.setTotalPackets(this.getTotalPackets() + 1);
 		this.setTotalBytes(this.getTotalBytes() + currentPacketLength);
 		

@@ -32,7 +32,7 @@ public class Driver {
 			System.arraycopy(testReader.getPcapHeader(),0,a,0,16);
 			System.arraycopy(testReader.getPacket(),0,a,16,testReader.getCurrentPacketLength());
     		testWriter.write(testReader.getTimeStamp(), a);
-			//System.out.println(new BytesWritable(a));
+			//System.out.println(testReader.getTimeStamp());
     	}
 //		while (testReader.getPacketTimeStamp() != -1){
 //			testWriter.write(testReader.getTimeStamp(), testReader.getPacket());
