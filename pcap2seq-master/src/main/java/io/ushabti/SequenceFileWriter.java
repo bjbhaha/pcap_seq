@@ -66,7 +66,7 @@ public class SequenceFileWriter {
 
 			// 设置 SequenceFile 的 Key 和 Value 类型
 			conf.setOutputKeyClass(key.getClass());
-			conf.setOutputValueClass(value.getClass());
+			conf.setOutputValueClass(value.getClass());//
 
 			// 设置输出格式为 SequenceFile
 			conf.setOutputFormat(SequenceFileOutputFormat.class);
